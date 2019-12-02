@@ -59,12 +59,10 @@ export default {
 
     const santa = { x: 0, y: 0 };
     const robo = { x: 0, y: 0 };
-    let isSanta = true;
 
     grid.setCell(0, 0, 1);
-    [...input].forEach(char => {
-      const pos = isSanta ? santa : robo;
-      isSanta = !isSanta;
+    [...input].forEach((char, index) => {
+      const pos = index % 2 === 0 ? santa : robo;
       move(pos, char);
       incrementCell(grid, pos);
     });

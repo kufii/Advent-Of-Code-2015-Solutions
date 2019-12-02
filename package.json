@@ -15,7 +15,6 @@
   "license": "ISC",
   "dependencies": {
     "mithril": "^2.0.4",
-    "mithril-hooks": "^0.5.6",
     "zaftig": "^0.8.3"
   },
   "devDependencies": {
@@ -23,12 +22,10 @@
     "@babel/core": "^7.7.4",
     "@babel/preset-env": "^7.7.4",
     "babel-loader": "^8.0.6",
-    "css-loader": "^3.2.0",
-    "eslint": "^6.7.1",
+    "eslint": "^6.7.2",
     "eslint-config-adpyke-es6": "^1.4.13",
     "eslint-config-prettier": "^6.7.0",
     "prettier": "^1.19.1",
-    "style-loader": "^1.0.1",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
   }
