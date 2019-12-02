@@ -1,12 +1,9 @@
 import input from './input';
+import { sum, sortNum } from '../../util';
 
 const getInput = () => input.split('\n').map(str => str.split('x').map(Number));
 
 const getSides = ([l, w, h]) => [l * w, w * h, h * l];
-
-const sum = (a, b) => a + b;
-
-const sortNum = (a, b) => a - b;
 
 export default {
   part1: () =>
