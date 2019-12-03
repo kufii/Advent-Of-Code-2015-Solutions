@@ -1,34 +1,27 @@
 import input from './input';
 
-class Infinite2dGrid {
-  constructor(defaultValue) {
-    this.grid = {};
-    this.default = defaultValue;
+export class InfiniteGrid {
+  constructor(fill) {
+    this.fill = fill;
+    this.grid = new Map();
   }
 
   get cells() {
-    return Object.entries(this.grid).reduce(
-      (acc, [y, row]) => [
-        ...acc,
-        ...Object.entries(row).map(([x, value]) => ({
-          x: Number(x),
-          y: Number(y),
-          value
-        }))
-      ],
-      []
-    );
+    return [...this.grid.entries()]
+      .map(([pos, value]) => [...pos.split(',').map(Number), value])
+      .map(([x, y, value]) => ({ x, y, value }));
   }
 
-  getCell(x, y) {
-    const row = this.grid[y];
-    const value = row && row[x];
-    return value == null ? this.default : value;
+  key(x, y) {
+    return `${x},${y}`;
   }
 
-  setCell(x, y, value) {
-    this.grid[y] = this.grid[y] || {};
-    this.grid[y][x] = value;
+  set(x, y, value) {
+    this.grid.set(this.key(x, y), value);
+  }
+
+  get(x, y) {
+    return this.grid.has(this.key(x, y)) ? this.grid.get(this.key(x, y)) : this.fill;
   }
 }
 
@@ -39,14 +32,14 @@ const move = (pos, char) => {
   else if (char === '>') pos.x += 1;
 };
 
-const incrementCell = (grid, { x, y }) => grid.setCell(x, y, grid.getCell(x, y) + 1);
+const incrementCell = (grid, { x, y }) => grid.set(x, y, grid.get(x, y) + 1);
 
 export default {
   part1() {
-    const grid = new Infinite2dGrid(0);
+    const grid = new InfiniteGrid(0);
 
     const pos = { x: 0, y: 0 };
-    grid.setCell(0, 0, 1);
+    grid.set(0, 0, 1);
     [...input].forEach(char => {
       move(pos, char);
       incrementCell(grid, pos);
@@ -55,12 +48,12 @@ export default {
     return grid.cells.length + ' houses with presents delivered';
   },
   part2() {
-    const grid = new Infinite2dGrid(0);
+    const grid = new InfiniteGrid(0);
 
     const santa = { x: 0, y: 0 };
     const robo = { x: 0, y: 0 };
 
-    grid.setCell(0, 0, 1);
+    grid.set(0, 0, 1);
     [...input].forEach((char, index) => {
       const pos = index % 2 === 0 ? santa : robo;
       move(pos, char);

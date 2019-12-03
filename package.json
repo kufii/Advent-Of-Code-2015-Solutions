@@ -6,6 +6,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "webpack src/index.js --output bin/app.js -d --watch",
+    "build": "webpack src/index.js --output bin/app.js -d",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{js,jsx,md,json,css,prettierrc,eslintrc,html}\"",
     "check:format": "prettier --check \"**/*.{js,jsx,md,json,css,prettierrc,eslintrc,html}\"",
