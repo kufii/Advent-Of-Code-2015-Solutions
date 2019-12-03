@@ -15,6 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "@babel/runtime": "^7.7.4",
+    "dedent": "^0.7.0",
     "md5": "^2.2.1",
     "mithril": "^2.0.4",
     "zaftig": "^0.8.3"
