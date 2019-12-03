@@ -10,18 +10,18 @@ const fetchInput = () =>
     .then(text => text.trim())
     .then(text => (localStorage.setItem('day8.input', text), text));
 
-const escapeRegex = '((?<!\\\\)(?:(\\\\\\\\)*))';
+const escapeRegex = /((?<!\\)(?:(\\\\)*))/u.source;
 
 const decodeStr = str =>
   str
     .slice(1, str.length - 1)
-    .replace(new RegExp(`${escapeRegex}\\\\x[0-9a-f]{2}`, 'giu'), match =>
+    .replace(new RegExp(escapeRegex + /\\x[0-9a-f]{2}/u.source, 'giu'), match =>
       match.replace(
         /\\x[0-9a-f]+/iu,
         String.fromCharCode(parseInt(match.slice(match.length - 2), 16))
       )
     )
-    .replace(new RegExp(`${escapeRegex}\\\\"`, 'gu'), '$1"')
+    .replace(new RegExp(escapeRegex + /\\"/u.source, 'gu'), '$1"')
     .replace(/\\\\/gu, '\\');
 
 const encodeStr = str => JSON.stringify(str);
