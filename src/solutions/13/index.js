@@ -46,6 +46,6 @@ export default {
   part2: () => {
     const happiness = parseInput();
     happiness.Adrien = {};
-    return 'Optimal seating results in happiness, with me added: ' + getOptimalHappiness(happiness);
+    return 'Optimal seating with me added results in happiness: ' + getOptimalHappiness(happiness);
   }
 };
