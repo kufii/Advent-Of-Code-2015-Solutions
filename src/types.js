@@ -1,8 +1,8 @@
 const obj = ['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp'].reduce(
-  (obj, name) => {
-    obj[`is${name}`] = a => Object.prototype.toString.call(a) === `[object ${name}]`;
-    return obj;
-  },
+  (obj, name) => ({
+    ...obj,
+    [`is${name}`]: a => Object.prototype.toString.call(a) === `[object ${name}]`
+  }),
   {
     isArray: Array.isArray,
     isGenerator: a =>
