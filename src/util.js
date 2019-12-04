@@ -30,4 +30,4 @@ export const range = (start, stop) => {
   return result;
 };
 
-export const mod = (n, m) => ((n % m) + m) % m;
+export const mod = (n, m) => n - Math.floor(n / m) * m;
