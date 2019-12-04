@@ -30,29 +30,22 @@ const getHappiness = (happiness, seating) =>
   seating
     .map(
       (p, i) =>
-        happiness[p][seating[mod(i - 1, seating.length)]] +
-        happiness[p][seating[mod(i + 1, seating.length)]]
+        (happiness[p][seating[mod(i - 1, seating.length)]] || 0) +
+        (happiness[p][seating[mod(i + 1, seating.length)]] || 0)
     )
     .reduce(sum);
 
-const getOptimalHappiness = (happiness, people) =>
-  Math.max(...getSeatingArrangements(people).map(s => getHappiness(happiness, s)));
+const getOptimalHappiness = happiness =>
+  Math.max(...getSeatingArrangements(Object.keys(happiness)).map(s => getHappiness(happiness, s)));
 
 export default {
   part1: () => {
     const happiness = parseInput();
-    const people = Object.keys(happiness);
-    return 'Optimal seating results in happiness: ' + getOptimalHappiness(happiness, people);
+    return 'Optimal seating results in happiness: ' + getOptimalHappiness(happiness);
   },
   part2: () => {
     const happiness = parseInput();
-    const people = Object.keys(happiness);
     happiness.Adrien = {};
-    people.forEach(p => ((happiness[p].Adrien = 0), (happiness.Adrien[p] = 0)));
-    people.push('Adrien');
-    return (
-      'Optimal seating results in happiness, with me added: ' +
-      getOptimalHappiness(happiness, people)
-    );
+    return 'Optimal seating results in happiness, with me added: ' + getOptimalHappiness(happiness);
   }
 };
