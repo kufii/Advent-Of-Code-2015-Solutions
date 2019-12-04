@@ -31,3 +31,7 @@ export const range = (start, stop) => {
 };
 
 export const mod = (n, m) => n - Math.floor(n / m) * m;
+
+export const maxBy = cb => (a, b) => (cb(b) > cb(a) ? b : a);
+
+export const minBy = cb => (a, b) => (cb(b) < cb(a) ? b : a);
