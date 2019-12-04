@@ -12,6 +12,6 @@ const extractNumbers = (json, ignoreRed) => {
 };
 
 export default {
-  part1: () => extractNumbers(JSON.parse(input)),
-  part2: () => extractNumbers(JSON.parse(input), true)
+  part1: () => 'Sum of all nums: ' + extractNumbers(JSON.parse(input)),
+  part2: () => 'Sum of all nums excluding red: ' + extractNumbers(JSON.parse(input), true)
 };
