@@ -5,11 +5,10 @@ import { sum } from '../../util';
 const extractNumbers = (json, ignoreRed) => {
   if (isNumber(json)) return json;
   else if (isString(json)) return 0;
-  else if (isArray(json)) return json.map(x => extractNumbers(x, ignoreRed)).reduce(sum);
-  const values = Object.values(json);
-  return ignoreRed && values.includes('red')
-    ? 0
-    : values.map(x => extractNumbers(x, ignoreRed)).reduce(sum);
+  const values = isArray(json)
+    ? json
+    : !(ignoreRed && Object.values(json).includes('red')) && Object.values(json);
+  return values ? values.map(x => extractNumbers(x, ignoreRed)).reduce(sum) : 0;
 };
 
 export default {
