@@ -23,14 +23,9 @@ export const replaceAt = (str, i, replace) => str.slice(0, i) + replace + str.sl
 
 export const range = (start, stop) => {
   const result = [];
-  if (isString(start)) {
-    for (let i = start.charCodeAt(0); i <= stop.charCodeAt(0); i++) {
-      result.push(String.fromCharCode(i));
-    }
-  } else {
-    for (let i = start; i <= stop; i++) {
-      result.push(i);
-    }
+  const numOrCharCode = n => (isString(n) ? n.charCodeAt(0) : n);
+  for (let i = numOrCharCode(start); i <= numOrCharCode(stop); i++) {
+    result.push(isString(start) ? String.fromCharCode(i) : i);
   }
   return result;
 };
