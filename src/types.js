@@ -4,6 +4,7 @@ const obj = ['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp'].redu
     return obj;
   },
   {
+    isArray: Array.isArray,
     isGenerator: a =>
       a instanceof
       function*() {
@@ -11,4 +12,13 @@ const obj = ['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp'].redu
       }.constructor
   }
 );
-export const { isArguments, isFunction, isString, isNumber, isDate, isRegExp, isGenerator } = obj;
+export const {
+  isArguments,
+  isFunction,
+  isString,
+  isNumber,
+  isDate,
+  isRegExp,
+  isArray,
+  isGenerator
+} = obj;
