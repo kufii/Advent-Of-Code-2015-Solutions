@@ -9,9 +9,15 @@ export default () => {
   let visualize = true;
   let loading = false;
   let output = '';
+  let canvasVisible = false;
 
   let interval;
   let intervalRunning = false;
+
+  const clearOutput = () => {
+    output = '';
+    canvasVisible = false;
+  };
 
   const stopInterval = () => {
     clearInterval(interval);
@@ -20,6 +26,7 @@ export default () => {
 
   const outputErr = err => {
     stopInterval();
+    clearOutput();
     output = 'Error';
     loading = false;
     console.error(err);
@@ -28,7 +35,7 @@ export default () => {
 
   const runGenerator = gen => {
     const data = gen();
-    output = '';
+    clearOutput();
     interval = setInterval(() => {
       try {
         const { value, done } = data.next();
@@ -43,6 +50,7 @@ export default () => {
 
   const load = fn => {
     stopInterval();
+    clearOutput();
     loading = true;
     m.redraw();
     setTimeout(() => {
@@ -50,7 +58,15 @@ export default () => {
         Promise.resolve(fn(visualize))
           .then(data => {
             loading = false;
-            isGenerator(data) ? runGenerator(data) : (output = data.toString());
+            if (isGenerator(data)) {
+              runGenerator(data);
+            } else if (data.canvasRender) {
+              canvasVisible = true;
+              data.canvasRender(document.querySelector('#canvas'));
+              output = data.message;
+            } else {
+              output = data.toString();
+            }
           })
           .then(m.redraw)
           .catch(outputErr);
@@ -64,7 +80,7 @@ export default () => {
     stopInterval();
     day = newDay;
     localStorage.setItem('day', day);
-    output = '';
+    clearOutput();
   };
 
   const loadButton = (text, onclick) =>
@@ -119,8 +135,17 @@ export default () => {
             line-height 1em;
             padding 5px;
             overflow visible;
+            mb 0
           `,
           loading ? 'Loading...' : output
+        ),
+        m(
+          'canvas#canvas' +
+            z`
+            border 1 solid black
+            image-rendering pixelated
+          `,
+          { hidden: !canvasVisible }
         )
       ])
   };
