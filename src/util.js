@@ -35,3 +35,20 @@ export const mod = (n, m) => n - Math.floor(n / m) * m;
 export const maxBy = cb => (a, b) => (cb(b) > cb(a) ? b : a);
 
 export const minBy = cb => (a, b) => (cb(b) < cb(a) ? b : a);
+
+export const nestedLoop = function*(n, min, max, filter) {
+  const arr = Array(n + 1).fill(min);
+  arr[n] = 0;
+  let i = 0;
+  while (!arr[n]) {
+    if (!filter || filter(arr)) yield arr.slice(0, n);
+
+    arr[0]++;
+    while (arr[i] === max) {
+      arr[i] = min;
+      i++;
+      arr[i]++;
+      if (arr[i] !== max) i = 0;
+    }
+  }
+};

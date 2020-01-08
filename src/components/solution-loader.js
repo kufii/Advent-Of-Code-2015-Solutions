@@ -6,6 +6,7 @@ import { isGenerator } from '../types';
 
 export default () => {
   let day = localStorage.getItem('day') || 0;
+  if (!solutions[day]) day = 0;
   let visualize = true;
   let loading = false;
   let output = '';
@@ -13,6 +14,8 @@ export default () => {
 
   let interval;
   let intervalRunning = false;
+  let generator;
+  let generatorInput = '';
 
   const clearOutput = () => {
     output = '';
@@ -22,6 +25,8 @@ export default () => {
   const stopInterval = () => {
     clearInterval(interval);
     intervalRunning = false;
+    generator = null;
+    generatorInput = '';
   };
 
   const outputErr = err => {
@@ -33,19 +38,45 @@ export default () => {
     m.redraw();
   };
 
+  const scrollToBottom = () =>
+    setTimeout(() => {
+      const div = document.querySelector('#output');
+      div.scrollTop = div.scrollHeight;
+    }, 0);
+
   const runGenerator = gen => {
     const data = gen();
     clearOutput();
-    interval = setInterval(() => {
+
+    const next = input => {
       try {
-        const { value, done } = data.next();
-        done ? stopInterval() : (output = value && value.toString());
-        m.redraw();
+        const { value, done } = data.next(input);
+        if (generator && value === 'interval') {
+          generator = null;
+          interval = setInterval(next, solutions[day].interval || 0);
+          intervalRunning = true;
+        } else {
+          done ? stopInterval() : (output = value && value.toString());
+          m.redraw();
+          if (solutions[day].autoScroll) scrollToBottom();
+        }
       } catch (err) {
         outputErr(err);
       }
-    }, solutions[day].interval || 0);
-    intervalRunning = true;
+    };
+    if (solutions[day].input) {
+      generator = (function*() {
+        let input;
+        while (true) {
+          next(input);
+          input = yield;
+        }
+      })();
+      generator.next();
+    } else {
+      interval = setInterval(next, solutions[day].interval || 0);
+      intervalRunning = true;
+    }
   };
 
   const load = fn => {
@@ -94,59 +125,106 @@ export default () => {
       text
     );
 
+  const sendGeneratorInput = () => {
+    generator.next(generatorInput);
+    generatorInput = '';
+    scrollToBottom();
+  };
+
   return {
     view: () =>
-      m('div' + z`text-align center; p 1em`, [
-        m(
-          'form.pure-form',
-          m('fieldset', [
-            m('label', 'Day: '),
-            m(Select, {
-              options: solutions.map((_, index) => ({
-                value: index,
-                text: `Day ${index + 1}`
-              })),
-              selected: day,
-              onselect: changeDay
-            }),
-            m('div', { hidden: !solutions[day].visualize }, [
-              m('label.pure-checkbox', [
-                'Visualize ',
-                m('input[type=checkbox]', {
-                  oninput: ({ target: t }) => (visualize = t.checked),
-                  checked: visualize
-                })
-              ])
-            ]),
-            m('div', [
-              loadButton('Part 1', () => load(solutions[day].part1)),
-              loadButton('Part 2', () => load(solutions[day].part2))
-            ]),
+      m(
+        'div' +
+          z`
+          text-align center
+          display flex
+          flex-flow column
+          overflow hidden
+        `,
+        [
+          m(
+            'form.pure-form',
+            m('fieldset', [
+              m('label', 'Day: '),
+              m(Select, {
+                options: solutions.map((_, index) => ({
+                  value: index,
+                  text: `Day ${index + 1}`
+                })),
+                selected: day,
+                onselect: changeDay
+              }),
+              m('div', { hidden: !solutions[day] || !solutions[day].visualize }, [
+                m('label.pure-checkbox', [
+                  'Visualize ',
+                  m('input[type=checkbox]', {
+                    oninput: ({ target: t }) => (visualize = t.checked),
+                    checked: visualize
+                  })
+                ])
+              ]),
+              m('div', [
+                loadButton('Part 1', () => load(solutions[day].part1)),
+                loadButton('Part 2', () => load(solutions[day].part2))
+              ]),
+              m('div', { hidden: !intervalRunning })
+            ])
+          ),
+          m(
+            'div#output' +
+              z`
+              overflow auto
+            `,
+            [
+              m(
+                'pre' +
+                  z`
+                  display inline-block
+                  ff 'Mononoki', monospace, monospace
+                  line-height 1.13em
+                  padding 5
+                  m 0
+                  font-size 1em
+                  max-width 100%
+                  white-space ${solutions[day].wrap ? 'pre-wrap' : 'pre'}
+                  text-align ${solutions[day].textAlign || 'center'}
+                  width ${solutions[day].width || 'auto'}
+                `,
+                loading ? 'Loading...' : solutions[day].html ? m.trust(output) : output
+              ),
+              m('br'),
+              m(
+                'canvas#canvas' +
+                  z`
+                  border 1 solid black
+                  image-rendering pixelated
+                `,
+                { hidden: !canvasVisible }
+              )
+            ]
+          ),
+          generator &&
             m(
-              'div',
-              { hidden: !intervalRunning },
-              m('button.pure-button', { type: 'button', onclick: stopInterval }, 'Stop!')
+              'div.pure-form' +
+                z`
+                d flex
+                jc center
+              `,
+              [
+                m('input#textbox' + z`mb 0.3em`, {
+                  type: 'text',
+                  value: generatorInput,
+                  oninput: e => (generatorInput = e.target.value),
+                  onkeypress: e => (e.code === 'Enter' && sendGeneratorInput(), true)
+                }),
+                m(
+                  'button.pure-button' + z`mb 0.3em`,
+                  { type: 'button', onclick: sendGeneratorInput },
+                  'Send'
+                )
+              ]
             )
-          ])
-        ),
-        m(
-          'pre' +
-            z`
-            line-height 1em;
-            padding 5px;
-            overflow visible;
-            mb 0
-          `,
-          loading ? 'Loading...' : output
-        ),
-        m(
-          'canvas#canvas' +
-            z`
-            border 1 solid black
-            image-rendering pixelated
-          `,
-          { hidden: !canvasVisible }
-        )
-      ])
+        ]
+      )
   };
 };
