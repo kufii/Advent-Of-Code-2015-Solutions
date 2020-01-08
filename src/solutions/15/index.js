@@ -40,6 +40,9 @@ const getHighestScoringSet = (ingredients, filter) =>
     )
   ].reduce(maxBy(a => getScore(ingredients, a)));
 
+const getRecipeOutput = (ingredients, amounts) =>
+  amounts.map((n, i) => `${n} ${ingredients[i].name}`).join(', ');
+
 export default {
   part1() {
     const ingredients = parseInput();
@@ -47,7 +50,7 @@ export default {
 
     return dedent`
       Recipe that results in highest scoring cookie:
-      ${amounts.map((n, i) => `${n} ${ingredients[i].name}`).join(', ')}
+      ${getRecipeOutput(ingredients, amounts)}
       Total Score: ${getScore(ingredients, amounts)}
     `;
   },
@@ -60,7 +63,7 @@ export default {
 
     return dedent`
       Recipe that results in highest scoring 500 calorie cookie:
-      ${amounts.map((n, i) => `${n} ${ingredients[i].name}`).join(', ')}
+      ${getRecipeOutput(ingredients, amounts)}
       Total Score: ${getScore(ingredients, amounts)}
     `;
   }
