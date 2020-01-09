@@ -5,7 +5,7 @@ import solutions from '../solutions';
 import { isGenerator } from '../types';
 
 export default () => {
-  let day = localStorage.getItem('day') || 0;
+  let day = Math.min(localStorage.getItem('day') || 0, solutions.length - 1);
   let visualize = true;
   let loading = false;
   let output = '';
