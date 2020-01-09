@@ -1,5 +1,7 @@
 import { isString } from './types';
 
+export const output2dArray = arr => arr.map(line => line.join('')).join('\n');
+
 export const makeArray = (ySize, xSize, fill) => {
   const arr = [];
   for (let y = 0; y < ySize; y++) {

@@ -1,5 +1,5 @@
 import input from './input';
-import { makeArray, sum, nestedLoop } from '../../util';
+import { makeArray, sum, nestedLoop, output2dArray, fastMax } from '../../util';
 
 const parseInput = () =>
   input
@@ -19,23 +19,28 @@ const runCmd = (grid, { cmd, from, to }, turnOnCmd, turnOffCmd, toggleCmd) =>
       ))
   );
 
+const getLightCell = (n, max) =>
+  n === 0 ? '█' : n / max < 0.25 ? '▓' : n / max < 0.5 ? '▒' : n / max < 0.75 ? '░' : ' ';
+
 export default {
-  part1: () =>
+  part1: visualize =>
     function*() {
-      const grid = makeArray(1000, 1000, false);
+      const grid = makeArray(1000, 1000, '.');
       for (const cmd of parseInput()) {
         runCmd(
           grid,
           cmd,
-          () => true,
-          () => false,
-          prev => !prev
+          () => '#',
+          () => '.',
+          prev => (prev === '#' ? '.' : '#')
         );
         yield 'Running...';
       }
-      yield '# of lights lit: ' + grid.flatMap(arr => arr.filter(Boolean)).length;
+      yield '# of lights lit: ' +
+        grid.flatMap(arr => arr.filter(c => c === '#')).length +
+        (visualize ? '\n\n' + output2dArray(grid) : '');
     },
-  part2: () =>
+  part2: visualize =>
     function*() {
       const grid = makeArray(1000, 1000, 0);
       for (const cmd of parseInput()) {
@@ -48,6 +53,12 @@ export default {
         );
         yield 'Running...';
       }
-      yield 'Total Brightness: ' + grid.flat().reduce(sum);
-    }
+      const max = fastMax(grid.flat());
+      yield 'Total Brightness: ' +
+        grid.flat().reduce(sum) +
+        (visualize
+          ? '\n\n' + output2dArray(grid.map(line => line.map(n => getLightCell(n, max))))
+          : '');
+    },
+  visualize: true
 };
