@@ -15,6 +15,6 @@ export default () => ({
           font-size 3em
         }
       `,
-      m('h1', 'Advent of Code 2019')
+      m('h1', 'Advent of Code 2015')
     )
 });
