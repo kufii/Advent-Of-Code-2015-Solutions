@@ -3,7 +3,7 @@ import md5 from 'md5';
 
 const run = numZeros =>
   function*() {
-    let hash = '';
+    let hash;
     let n = 0;
     do {
       n++;

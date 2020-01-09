@@ -15,6 +15,68 @@ export const makeArray = (ySize, xSize, fill) => {
   return arr;
 };
 
+export const fastMax = arr => arr.reduce((max, v) => (max >= v ? max : v), -Infinity);
+
+export const fastMin = arr => arr.reduce((min, v) => (min <= v ? min : v), Infinity);
+
+export class InfiniteGrid {
+  constructor(fill) {
+    this.fill = fill;
+    this.grid = new Map();
+  }
+
+  get cells() {
+    return [...this.grid.entries()]
+      .map(([pos, value]) => [...pos.split(',').map(Number), value])
+      .map(([x, y, value]) => ({ x, y, value }));
+  }
+
+  get bounds() {
+    const cells = this.cells;
+    return {
+      min: {
+        x: fastMin(cells.map(({ x }) => x)),
+        y: fastMin(cells.map(({ y }) => y))
+      },
+      max: {
+        x: fastMax(cells.map(({ x }) => x)),
+        y: fastMax(cells.map(({ y }) => y))
+      }
+    };
+  }
+
+  toArray(min, max) {
+    const bounds = this.bounds;
+    if (min == null) min = bounds.min;
+    if (max == null) max = bounds.max;
+    const array = makeArray(max.y - min.y + 1, max.x - min.x + 1, this.fill);
+    for (let y = min.y; y <= max.y; y++) {
+      for (let x = min.x; x <= max.x; x++) {
+        array[y - min.y][x - min.x] = this.get(x, y);
+      }
+    }
+    return array;
+  }
+
+  key(x, y) {
+    return `${x},${y}`;
+  }
+
+  set(x, y, value) {
+    this.grid.set(this.key(x, y), value);
+  }
+
+  get(x, y) {
+    return this.grid.has(this.key(x, y)) ? this.grid.get(this.key(x, y)) : this.fill;
+  }
+
+  clone() {
+    const newGrid = new InfiniteGrid(this.fill);
+    newGrid.grid = new Map(this.grid);
+    return newGrid;
+  }
+}
+
 export const sum = (a, b) => a + b;
 
 export const sortNum = (a, b) => a - b;
@@ -37,18 +99,21 @@ export const maxBy = cb => (a, b) => (cb(b) > cb(a) ? b : a);
 export const minBy = cb => (a, b) => (cb(b) < cb(a) ? b : a);
 
 export const nestedLoop = function*(n, min, max, filter) {
-  const arr = Array(n + 1).fill(min);
-  arr[n] = 0;
+  const getMin = i => (Array.isArray(min) ? min[i] : min);
+  const getMax = i => (Array.isArray(max) ? max[i] : max);
+
+  const arr = [...Array(n)].map((_, i) => getMin(i));
   let i = 0;
-  while (!arr[n]) {
-    if (!filter || filter(arr)) yield arr.slice(0, n);
+  while (true) {
+    if (!filter || filter(arr)) yield arr.slice();
 
     arr[0]++;
-    while (arr[i] === max) {
-      arr[i] = min;
+    while (arr[i] === getMax(i) + 1) {
+      arr[i] = getMin(i);
       i++;
+      if (i === n) return;
       arr[i]++;
-      if (arr[i] !== max) i = 0;
+      if (arr[i] !== getMax(i) + 1) i = 0;
     }
   }
 };

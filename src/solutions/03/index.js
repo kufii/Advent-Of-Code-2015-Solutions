@@ -1,29 +1,5 @@
 import input from './input';
-
-export class InfiniteGrid {
-  constructor(fill) {
-    this.fill = fill;
-    this.grid = new Map();
-  }
-
-  get cells() {
-    return [...this.grid.entries()]
-      .map(([pos, value]) => [...pos.split(',').map(Number), value])
-      .map(([x, y, value]) => ({ x, y, value }));
-  }
-
-  key(x, y) {
-    return `${x},${y}`;
-  }
-
-  set(x, y, value) {
-    this.grid.set(this.key(x, y), value);
-  }
-
-  get(x, y) {
-    return this.grid.has(this.key(x, y)) ? this.grid.get(this.key(x, y)) : this.fill;
-  }
-}
+import { InfiniteGrid } from '../../util';
 
 const move = (pos, char) => {
   if (char === '^') pos.y -= 1;

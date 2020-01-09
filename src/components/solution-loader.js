@@ -6,7 +6,6 @@ import { isGenerator } from '../types';
 
 export default () => {
   let day = localStorage.getItem('day') || 0;
-  if (!solutions[day]) day = 0;
   let visualize = true;
   let loading = false;
   let output = '';
@@ -167,7 +166,11 @@ export default () => {
                 loadButton('Part 1', () => load(solutions[day].part1)),
                 loadButton('Part 2', () => load(solutions[day].part2))
               ]),
-              m('div', { hidden: !intervalRunning })
+              m(
+                'div',
+                { hidden: !intervalRunning },
+                m('button.pure-button', { type: 'button', onclick: stopInterval }, 'Stop!')
+              )
             ])
           ),
           m(

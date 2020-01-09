@@ -1,5 +1,5 @@
 import input from './input';
-import { makeArray, sum } from '../../util';
+import { makeArray, sum, nestedLoop } from '../../util';
 
 const parseInput = () =>
   input
@@ -11,17 +11,9 @@ const parseInput = () =>
       to: { x: Number(toX), y: Number(toY) }
     }));
 
-const iterate = function*(from, to) {
-  for (let x = from.x; x <= to.x; x++) {
-    for (let y = from.y; y <= to.y; y++) {
-      yield { x, y };
-    }
-  }
-};
-
 const runCmd = (grid, { cmd, from, to }, turnOnCmd, turnOffCmd, toggleCmd) =>
-  [...iterate(from, to)].forEach(
-    ({ x, y }) =>
+  [...nestedLoop(2, [from.x, from.y], [to.x, to.y])].forEach(
+    ([x, y]) =>
       (grid[y][x] = { 'turn on': turnOnCmd, 'turn off': turnOffCmd, toggle: toggleCmd }[cmd](
         grid[y][x]
       ))
