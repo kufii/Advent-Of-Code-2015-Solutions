@@ -81,6 +81,23 @@ export const sum = (a, b) => a + b;
 
 export const sortNum = (a, b) => a - b;
 
+export const sortBy = (...cbs) => (a, b) => {
+  for (const cb of cbs) {
+    const aa = cb(a);
+    const bb = cb(b);
+    const diff = cb.desc
+      ? isString(aa)
+        ? bb.localeCompare(aa)
+        : bb - aa
+      : isString(aa)
+      ? aa.localeCompare(bb)
+      : aa - bb;
+    if (diff !== 0) return diff;
+  }
+  return 0;
+};
+export const desc = cb => ((cb.desc = true), cb);
+
 export const replaceAt = (str, i, replace) => str.slice(0, i) + replace + str.slice(i + 1);
 
 export const range = (start, stop) => {
@@ -117,3 +134,6 @@ export const nestedLoop = function*(n, min, max, filter) {
     }
   }
 };
+
+export const getAllSubsets = arr =>
+  arr.reduce((subsets, value) => subsets.concat(subsets.map(set => [value, ...set])), [[]]);
